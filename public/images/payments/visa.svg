@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60">
+  <rect width="200" height="60" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+  <rect width="200" height="60" rx="12" fill="#1A1F71"/>
+  <text x="62" y="25" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-style="italic" font-weight="bold" fill="#ffb020" letter-spacing="2">VISA</text>
+  <text x="62" y="45" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-style="italic" font-weight="bold" fill="#ffffff" letter-spacing="2">VISA</text>
+  <text x="150" y="36" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" fill="#ffffff">Pay</text>
+  <text x="150" y="50" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="10" fill="#cfd6ff" letter-spacing="2">with VISA</text>
+</svg>

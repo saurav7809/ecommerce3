@@ -1,0 +1,25 @@
+<?php
+
+return [
+    ['name' => 'New launches', 'image' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Sofas', 'image' => 'https://images.unsplash.com/photo-1550254478-ead40cc54513?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Dining sets', 'image' => 'https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Coffee tables', 'image' => 'https://images.unsplash.com/photo-1532372320572-cda25653a26d?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Dressing tables', 'image' => 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Sofa beds', 'image' => 'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Recliners', 'image' => 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Collapsibles', 'image' => 'https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Shoe racks', 'image' => 'https://images.unsplash.com/photo-1558997519-83ea9252edf8?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Bean bags', 'image' => 'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Mattresses', 'image' => 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Office chairs', 'image' => 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Beds', 'image' => 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Wardrobes', 'image' => 'https://images.unsplash.com/photo-1558997519-83ea9252edf8?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Office tables', 'image' => 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'TV units', 'image' => 'https://images.unsplash.com/photo-1593784991095-a205069470b6?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Hammock', 'image' => 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Laptop tables', 'image' => 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'Home temples', 'image' => 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=420&q=82'],
+    ['name' => "Kids' furniture", 'image' => 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?auto=format&fit=crop&w=420&q=82'],
+    ['name' => 'View all', 'cta' => true],
+];

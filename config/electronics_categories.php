@@ -1,0 +1,25 @@
+<?php
+
+return [
+    ['name' => 'Laptops', 'icon' => 'fa-laptop', 'color' => '#2c3e50'],
+    ['name' => 'Persona audio', 'icon' => 'fa-headphones', 'color' => '#6c5ce7'],
+    ['name' => 'Wearables', 'icon' => 'fa-watch', 'color' => '#00cec9'],
+    ['name' => 'Grooming', 'icon' => 'fa-scissors', 'color' => '#fd79a8'],
+    ['name' => 'IT Peripherals', 'icon' => 'fa-keyboard', 'color' => '#0984e3'],
+    ['name' => 'Storage', 'icon' => 'fa-hard-drive', 'color' => '#d99f22'],
+    ['name' => 'Power Bank', 'icon' => 'fa-battery-full', 'color' => '#e17055'],
+    ['name' => 'Gaming', 'icon' => 'fa-gamepad', 'color' => 'linear-gradient(135deg, #6c5ce7, #e84393)'],
+    ['name' => 'Home audio', 'icon' => 'fa-volume-high', 'color' => '#00b894'],
+    ['name' => 'Routers', 'icon' => 'fa-wifi', 'color' => '#636e72'],
+    ['name' => 'Gaming Hub', 'icon' => 'fa-dice', 'color' => '#d63031'],
+    ['name' => 'Tablets', 'icon' => 'fa-tablet-screen-button', 'color' => '#74b9ff'],
+    ['name' => '2-Wheelers', 'icon' => 'fa-motorcycle', 'color' => '#f39c12'],
+    ['name' => 'Accessories', 'icon' => 'fa-plug', 'color' => '#8c7ae6'],
+    ['name' => 'Mobile cases', 'icon' => 'fa-mobile-screen-button', 'color' => '#ff7675'],
+    ['name' => 'Camera', 'icon' => 'fa-camera', 'color' => '#2d3436'],
+    ['name' => 'Chargers', 'icon' => 'fa-bolt', 'color' => '#20bf6b'],
+    ['name' => 'Smart Devices', 'icon' => 'fa-house-signal', 'color' => '#00bcd4'],
+    ['name' => 'Health Care', 'icon' => 'fa-heart-pulse', 'color' => '#00b894'],
+    ['name' => 'Printers', 'icon' => 'fa-print', 'color' => '#8395a7'],
+    ['name' => 'Launches', 'icon' => 'fa-rocket', 'color' => 'linear-gradient(135deg, #fd79a8, #e17055)', 'highlight' => true],
+];
