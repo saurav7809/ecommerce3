@@ -1,0 +1,10 @@
+.env
+**/.env
+.m2/
+**/node_modules/
+**/dist/
+**/target/
+**/__pycache__/
+*.pyc
+*.tsbuildinfo
+*.log

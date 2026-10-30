@@ -1,0 +1,22 @@
+{
+  "info": {
+    "name": "Common Goods Store API",
+    "description": "Local development requests for the Spring Boot ecommerce API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" }, { "key": "token", "value": "" },
+    { "key": "orderReference", "value": "" }, { "key": "razorpayOrderId", "value": "" },
+    { "key": "razorpayPaymentId", "value": "" }, { "key": "razorpaySignature", "value": "" }
+  ],
+  "item": [
+    { "name": "Health", "request": { "method": "GET", "url": "{{baseUrl}}/api/health" } },
+    { "name": "Search products", "request": { "method": "GET", "url": "{{baseUrl}}/api/products?q=ceramic&category=Home" } },
+    { "name": "Register account", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Alex Morgan\",\n  \"email\": \"alex@example.com\",\n  \"password\": \"change-me-123\"\n}" }, "url": "{{baseUrl}}/api/auth/register" } },
+    { "name": "Login", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"email\": \"alex@example.com\",\n  \"password\": \"change-me-123\"\n}" }, "url": "{{baseUrl}}/api/auth/login" } },
+    { "name": "Create order", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"email\": \"alex@example.com\",\n  \"fullName\": \"Alex Morgan\",\n  \"deliveryAddress\": \"10 Market Street, Portland, OR 97201\",\n  \"items\": [{ \"productId\": 1, \"quantity\": 1 }]\n}" }, "url": "{{baseUrl}}/api/orders" } },
+    { "name": "Order status", "request": { "method": "GET", "url": "{{baseUrl}}/api/orders/{{orderReference}}" } },
+    { "name": "Start Razorpay payment", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"reference\": \"{{orderReference}}\"\n}" }, "url": "{{baseUrl}}/api/payments/razorpay/order" } },
+    { "name": "Verify Razorpay payment", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"reference\": \"{{orderReference}}\",\n  \"razorpayOrderId\": \"{{razorpayOrderId}}\",\n  \"razorpayPaymentId\": \"{{razorpayPaymentId}}\",\n  \"razorpaySignature\": \"{{razorpaySignature}}\"\n}" }, "url": "{{baseUrl}}/api/payments/razorpay/verify" } }
+  ]
+}
