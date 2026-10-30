@@ -3,6 +3,7 @@ package store.commongoods.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -25,7 +26,7 @@ public class SecurityConfig {
     @Bean public UserDetailsService userDetailsService(StoreUserRepository users) { return email -> users.findByEmailIgnoreCase(email).orElseThrow(() -> new org.springframework.security.core.userdetails.UsernameNotFoundException("Account not found")); }
     @Bean public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
     @Bean public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception { return config.getAuthenticationManager(); }
-    @Bean public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwt, CorsConfigurationSource cors) throws Exception {
+    @Bean public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwt, @Qualifier("corsConfigurationSource") CorsConfigurationSource cors) throws Exception {
         return http.csrf(c -> c.disable()).cors(c -> c.configurationSource(cors)).sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(a -> a.requestMatchers("/api/health", "/actuator/health", "/api/auth/**").permitAll().requestMatchers(HttpMethod.GET,"/api/products/**","/api/orders/*").permitAll().requestMatchers(HttpMethod.POST,"/api/orders","/api/payments/razorpay/order","/api/payments/razorpay/verify").permitAll().anyRequest().authenticated())
             .addFilterBefore(jwt, UsernamePasswordAuthenticationFilter.class).build();
