@@ -1,24 +1,32 @@
-// ─── Utility helpers ─────────────────────────────────────────────────────────
-
-/** Format a number as INR currency */
-export const money = (n: number): string =>
-  new Intl.NumberFormat('en-IN', {
+export function formatCurrency(amount: number | null | undefined, currency = 'INR'): string {
+  if (amount == null) return '₹0';
+  return new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: 'INR',
+    currency: currency,
     maximumFractionDigits: 0,
-  }).format(n);
+  }).format(amount);
+}
 
-/** Build a full image URL — pass either an Unsplash photo ID or a full URL */
-export const imageUrl = (src: string, w = 900): string =>
-  src.startsWith('http')
-    ? src
-    : `https://images.unsplash.com/${src}?auto=format&fit=crop&w=${w}&q=85`;
+export function formatEstimatedDelivery(daysMin = 2, daysMax = 5): string {
+  const now = new Date();
+  const minDate = new Date(now);
+  minDate.setDate(now.getDate() + daysMin);
+  const maxDate = new Date(now);
+  maxDate.setDate(now.getDate() + daysMax);
 
-/** Clamp a value between min and max */
-export const clamp = (value: number, min: number, max: number): number =>
-  Math.min(Math.max(value, min), max);
+  const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', weekday: 'short' };
+  return `${minDate.toLocaleDateString('en-IN', options)} - ${maxDate.toLocaleDateString('en-IN', options)}`;
+}
 
-/** Truncate text to a given length */
-export const truncate = (text: string, max: number): string =>
-  text.length > max ? text.slice(0, max) + '…' : text;
+export function calculateSavings(compareAtPrice?: number, price?: number): { amount: number; percentage: number } {
+  if (!compareAtPrice || !price || compareAtPrice <= price) {
+    return { amount: 0, percentage: 0 };
+  }
+  const amount = compareAtPrice - price;
+  const percentage = Math.round((amount / compareAtPrice) * 100);
+  return { amount, percentage };
+}
 
+export function clsx(...classes: (string | boolean | undefined | null)[]): string {
+  return classes.filter(Boolean).join(' ');
+}

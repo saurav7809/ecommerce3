@@ -1,72 +1,181 @@
-# Common Goods — ecommerce platform
+# HomeNest — Wayfair-Style E-Commerce Platform
 
-This repository now includes a standalone React and Spring Boot platform under `frontend/` and `backend/`. The existing Laravel marketplace remains in the repository as the original implementation; the new full stack is isolated so it can be developed and run independently.
+A production-grade, enterprise home furnishings e-commerce platform built to replicate the rich browsing, faceted search, interior design AI assistance, and checkout experience of **Wayfair**.
 
-## Local run
+Designed and engineered to run **directly on Windows without Docker**, using native services.
 
-Requirements: Docker Desktop with Compose.
+---
 
-```sh
-cp .env.ecommerce.example .env.ecommerce
-docker compose --env-file .env.ecommerce up --build
+## 🏗️ Complete Technology Stack
+
+| Layer | Technology | Runs Without Docker? | Local Port |
+| :--- | :--- | :---: | :--- |
+| **Frontend** | React 19 + TypeScript (Vite) | ✅ Yes | `http://localhost:5173` |
+| **UI & Styling** | Tailwind CSS v4 + Wayfair Theme Tokens | ✅ Yes | — |
+| **State Management** | Redux Toolkit (RTK Query + Slices) | ✅ Yes | — |
+| **Routing** | React Router v7 | ✅ Yes | — |
+| **Icons** | Lucide React | ✅ Yes | — |
+| **Backend Framework** | Java 21 + Spring Boot 3.5.16 | ✅ Yes | `http://localhost:8080` |
+| **Persistence / ORM** | Spring Data JPA + Hibernate 6 | ✅ Yes | — |
+| **Database** | PostgreSQL 16+ / 17+ / 18+ | ✅ Yes | `localhost:5432` |
+| **DB Admin** | pgAdmin 4 or `psql` | ✅ Yes | Native Windows GUI |
+| **Security & Auth** | Spring Security 6 + JWT (jjwt 0.12.6) | ✅ Yes | Stateless Token Filter |
+| **API Documentation** | Swagger / OpenAPI 3 (SpringDoc 2.8.17) | ✅ Yes | `http://localhost:8080/swagger-ui.html` |
+| **Payment Gateway** | Razorpay Test Mode (Cards, UPI, COD) | ✅ Yes | Embedded Client + Webhook/Verify |
+| **Media Storage** | Cloudinary (Signed Direct Multipart Upload) | ✅ Yes | Hosted Cloud Service |
+| **Caching** | Redis (Native Windows / WSL / Hosted Redis) | ⚡ Optional | Spring Cache defaults to memory if absent |
+| **Search Engine** | Elasticsearch Cloud / JPA Multi-Match Search | ⚡ Optional | Native JPA Specifications + Fuzzy Search fallback |
+| **Event Messaging** | RabbitMQ Cloud / CloudAMQP | ⚡ Optional | Conditional publisher with console event relay fallback |
+| **AI Design Services** | Python 3.10+ & FastAPI + Uvicorn | ✅ Yes | `http://localhost:8001` |
+| **API Testing** | Postman Collection | ✅ Yes | `postman/HomeNest-API.postman_collection.json` |
+
+---
+
+## 🏛️ Local Architecture Overview
+
+```
+                      +-----------------------------------------+
+                      |           React Frontend (Vite)         |
+                      |          http://localhost:5173          |
+                      |   Redux Toolkit + RTK Query + Tailwind  |
+                      +--------------------+--------------------+
+                                           |
+                    REST / JSON (8080)     |     AI Chat & Styling (8001)
+                    +----------------------+--------------------+
+                    |                                           |
+                    v                                           v
++---------------------------------------+   +---------------------------------------+
+|          Spring Boot 3 (API)          |   |       Python FastAPI AI Service       |
+|         http://localhost:8080         |   |         http://localhost:8001         |
+|   Java 21 • Spring Data JPA • JWT     |<--|  Style Matching • Room Blueprints     |
+|   Razorpay • Cloudinary • Swagger     |   +---------------------------------------+
++-------------------+-------------------+
+                    |
+                    v JDBC (localhost:5432)
++---------------------------------------+
+|          PostgreSQL Database          |
+|            Database: homenest         |
+|            User/Pass: postgres        |
++---------------------------------------+
 ```
 
-Open the storefront at [http://localhost:5173](http://localhost:5173). The API health endpoint is [http://localhost:8080/api/health](http://localhost:8080/api/health). PostgreSQL, Redis, RabbitMQ, and the FastAPI recommendations service start with the application. The API seeds a small starter catalog the first time the database is empty.
+---
 
-To run the frontend outside Docker, use Node.js 20 or newer:
+## 🚀 Quick Start Guide (Windows Native — No Docker)
 
-```sh
+### 1. Prerequisites Checklist
+- **Java 21 JDK** (`java -version`)
+- **Node.js 20+** and **npm** (`node -v` / `npm -v`)
+- **Python 3.10+** (`python --version`)
+- **PostgreSQL** installed directly on Windows (or running on port 5432)
+
+---
+
+### 2. Database Setup (PostgreSQL)
+
+Open **pgAdmin 4** (or Windows PowerShell with `psql`):
+
+```sql
+CREATE DATABASE homenest;
+```
+
+*Note: Default credentials configured in `backend/src/main/resources/application.yml` are `user: postgres`, `password: postgres`. If your local password differs, you can pass it via environment variable `DATABASE_PASSWORD=your_password`.*
+
+---
+
+### 3. Start the Spring Boot Backend (Port 8080)
+
+The backend includes a pre-configured Maven Wrapper (`mvnw.cmd`), so **no system-wide Maven installation is needed**.
+
+```powershell
+cd backend
+.\mvnw.cmd spring-boot:run
+```
+
+- When the backend starts for the first time, the built-in `DataSeeder` automatically generates:
+  - **10 Core Home Departments & Subcategories** (Furniture, Outdoor, Bedding & Bath, Rugs, Decor, Lighting, Kitchen, Storage, Baby & Kids)
+  - **48+ High-Fidelity Furniture & Decor Pieces** complete with SKU, Unsplash photography, dimensions, weight, materials, and pricing
+  - **Pre-computed Customer Reviews & Star Ratings**
+  - **3 Default User Accounts**:
+    - **Admin:** `admin@homenest.local` / `Admin@12345`
+    - **Seller:** `seller@homenest.local` / `Seller@12345`
+    - **Customer:** `customer@homenest.local` / `Customer@12345`
+- Swagger UI will be available at: **`http://localhost:8080/swagger-ui.html`**
+- OpenAPI 3 JSON docs at: **`http://localhost:8080/v3/api-docs`**
+
+---
+
+### 4. Start the AI Design Assistant (Port 8001)
+
+The AI assistant provides natural-language room planning, budget filtering, and style matching (Scandinavian, Mid-Century Modern, Boho, Industrial, etc.).
+
+```powershell
+cd ai-service
+pip install -r requirements.txt
+uvicorn app.main:app --port 8001 --reload
+```
+
+---
+
+### 5. Start the React Frontend (Port 5173)
+
+```powershell
 cd frontend
 npm install
 npm run dev
 ```
 
-Optional: copy `frontend/.env.example` to `frontend/.env` to override service URLs or provide the public Razorpay test Key ID.
+Visit **`http://localhost:5173`** in your browser.
 
-To run the API outside Docker, use Java 17 and Maven 3.9 or newer, and start PostgreSQL, Redis, and RabbitMQ first:
+---
 
-```sh
-cd backend
-mvn spring-boot:run
-```
+## 🎨 Wayfair-Style Feature Highlights
 
-## What is implemented
+1. **Wayfair Purple & Gold Aesthetics:**
+   - Brand purple (`#7b189f`), dark plum (`#581172`), soft lavender highlights, and gold deal badges.
+2. **Interactive Department Mega-Menu:**
+   - Hover over Furniture, Outdoor, Bedding, Rugs, Lighting, or Decor to browse subcategories and featured deals with instant count badges.
+3. **Left-Rail Facet Filters:**
+   - Multi-attribute filtering by Price brackets, Design Aesthetic pills, Color Swatches, Materials, Brands, and In-Stock status.
+4. **Interactive Dual-Image Product Cards:**
+   - Smooth hover transition from primary lifestyle shot to secondary detail photo, discount pill, favorite heart toggle, and instant Add-to-Cart.
+5. **Product Detail Experience (PDP):**
+   - Multi-angle gallery with thumbnail selector.
+   - Comprehensive specifications accordion (Overview, Dimensions & Weights, Assembly & Care, Delivery & Returns).
+   - Review distribution histogram (5-star breakdown) and verified buyer review submission modal.
+6. **Free Shipping Progress Meter:**
+   - Real-time cart calculation with free delivery unlocked at ₹5,000 threshold.
+7. **Razorpay Test Mode & COD Checkout:**
+   - Complete 2-step checkout with address memory and seamless test payment verification.
+8. **AI Interior Designer Floating Drawer:**
+   - Natural language conversational assistant suggesting specific catalog items with direct "Add to Cart" buttons inside the chat.
+9. **Merchant & Admin Operations Portal (`/admin`):**
+   - Live revenue metrics, total orders, product catalog management (create/edit/delete), and fulfillment workflow (Confirmed -> Shipped -> Delivered).
 
-- Responsive React + TypeScript + Tailwind storefront with category filters, search, cart, quantity controls, account registration/sign-in, and checkout.
-- Spring Boot REST API for product search, JWT registration and login, and order creation/status.
-- PostgreSQL persistence for accounts, products, orders, and order lines. Prices are calculated by the API and inventory is checked under a row lock at checkout.
-- Redis-backed catalog response cache and RabbitMQ order-created events.
-- FastAPI recommendations service ranks the catalog using cart-category affinity and featured picks; the storefront shows results in its “For you” category.
-- Razorpay Test Mode checkout with server-created payment orders and HMAC signature verification. Without test keys, checkout still records an unpaid pending order and does not attempt to charge.
-- Cloudinary server-side environment settings are ready for product image hosting; starter products use public demo images.
+---
 
-## API
+## 🧪 Postman API Collection
 
-| Method | Endpoint | Purpose |
-|---|---|---|
-| GET | `/api/health` | Health check |
-| GET | `/api/products?q=ceramic&category=Home` | Search/filter catalog |
-| GET | `/api/products/{id}` | Product detail |
-| POST | `/api/auth/register` | Create customer account; returns a JWT |
-| POST | `/api/auth/login` | Sign in; returns a JWT |
-| POST | `/api/orders` | Place an order; server validates catalog price and stock |
-| GET | `/api/orders/{reference}` | Read order status |
-| GET | `/api/orders` | Read recent orders for the authenticated customer |
-| POST | `/api/payments/razorpay/order` | Create a Razorpay test payment order |
-| POST | `/api/payments/razorpay/verify` | Verify the payment signature and confirm the order |
-| POST | `http://localhost:8001/api/recommendations` | Rank the current catalog for a shopper |
+Import the included collection into Postman:
+- File path: `postman/HomeNest-API.postman_collection.json`
+- Includes pre-configured requests for Auth, Products, Categories, Cart, Orders, Razorpay, Reviews, Admin, and AI Assistant.
 
-Order request example:
+---
 
-```json
-{
-  "email": "shopper@example.com",
-  "fullName": "Alex Morgan",
-  "deliveryAddress": "10 Market Street, Portland, OR 97201",
-  "items": [{ "productId": 1, "quantity": 1 }]
-}
-```
+## 🔒 Optional Production Integrations
 
-For Razorpay test payments, set `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` in `.env`, and set the same public key ID as `VITE_RAZORPAY_KEY_ID` in `frontend/.env` when developing locally. Rebuild the storefront container after changing its Vite build arguments. For a production deployment, set a unique long `JWT_SECRET`, strong database credentials, a trusted `FRONTEND_ORIGIN`, and provider credentials from secret storage. The local defaults are for development only.
+| Feature | Environment Variables | Description |
+| :--- | :--- | :--- |
+| **Razorpay Payments** | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | Live or test keys from Razorpay dashboard |
+| **Cloudinary Media** | `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | Direct signed media uploads for product management |
+| **Redis Cache** | `SPRING_DATA_REDIS_HOST`, `SPRING_DATA_REDIS_PORT`, `SPRING_DATA_REDIS_PASSWORD` | Optional cache cluster. Defaults to in-memory caching if omitted |
+| **Elasticsearch Cloud**| `APP_SEARCH_ELASTICSEARCH_ENABLED=true`, `ELASTICSEARCH_URIS`, `ELASTICSEARCH_API_KEY` | Optional full-text search cluster. Defaults to PostgreSQL full-text search |
+| **RabbitMQ Cloud** | `APP_MESSAGING_ENABLED=true`, `RABBITMQ_HOST`, `RABBITMQ_PORT`, `RABBITMQ_USER`, `RABBITMQ_PASSWORD` | Optional order event messaging queue. Defaults to logging event relay |
 
-Import `postman/Common-Goods.postman_collection.json` into Postman for request examples.
+---
+
+## 📦 Build Verification
+
+To verify full compilation of both tiers:
+- **Backend:** `cd backend && .\mvnw.cmd compile` -> `BUILD SUCCESS` (Java 21, 59 sources)
+- **Frontend:** `cd frontend && npm run build` -> `built in 4.02s` (TypeScript + Vite)

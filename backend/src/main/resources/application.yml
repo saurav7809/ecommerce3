@@ -1,42 +1,95 @@
 server:
   port: ${PORT:8080}
+
 spring:
   application:
-    name: common-goods-store
+    name: homenest-api
+  threads:
+    virtual:
+      enabled: true
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/commongoods}
-    username: ${DATABASE_USER:store}
-    password: ${DATABASE_PASSWORD:store-local-only}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/homenest}
+    username: ${DATABASE_USER:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${JPA_DDL_AUTO:update}
     open-in-view: false
     properties:
       hibernate:
         jdbc:
           time_zone: UTC
+        default_batch_fetch_size: 50
+  mvc:
+    problemdetails:
+      enabled: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+  # Caching: "simple" (in-memory, default) or "redis" (local Redis/Memurai/WSL or a hosted Redis).
+  cache:
+    type: ${CACHE_TYPE:simple}
+    redis:
+      time-to-live: 10m
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      ssl:
+        enabled: ${REDIS_SSL:false}
+      repositories:
+        enabled: false
+  # Only contacted when app.messaging.enabled=true (e.g. a CloudAMQP instance).
   rabbitmq:
     host: ${RABBITMQ_HOST:localhost}
     port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USER:guest}
     password: ${RABBITMQ_PASSWORD:guest}
-  sql:
-    init:
-      mode: never
+    virtual-host: ${RABBITMQ_VHOST:/}
+    ssl:
+      enabled: ${RABBITMQ_SSL:false}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
 app:
   jwt:
+    # Development default only. Set JWT_SECRET to a long random value outside local development.
     secret: ${JWT_SECRET:local-development-secret-change-this-to-a-long-random-value-1234567890}
-    expiration: ${JWT_EXPIRATION_MS:86400000}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   cors:
-    allowed-origin: ${FRONTEND_ORIGIN:http://localhost:5173}
+    allowed-origins: ${FRONTEND_ORIGINS:http://localhost:5173,http://127.0.0.1:5173}
+  seed:
+    enabled: ${SEED_DATA:true}
+    # Development accounts created on first start. Change these before sharing the environment.
+    admin-email: ${ADMIN_EMAIL:admin@homenest.local}
+    admin-password: ${ADMIN_PASSWORD:Admin@12345}
+    seller-email: ${SELLER_EMAIL:seller@homenest.local}
+    seller-password: ${SELLER_PASSWORD:Seller@12345}
+  shipping:
+    free-threshold: ${FREE_SHIPPING_THRESHOLD:5000}
+    flat-fee: ${SHIPPING_FEE:499}
+    currency: INR
   cloudinary:
     cloud-name: ${CLOUDINARY_CLOUD_NAME:}
     api-key: ${CLOUDINARY_API_KEY:}
     api-secret: ${CLOUDINARY_API_SECRET:}
+    folder: ${CLOUDINARY_FOLDER:homenest/products}
   razorpay:
     key-id: ${RAZORPAY_KEY_ID:}
     key-secret: ${RAZORPAY_KEY_SECRET:}
+  messaging:
+    enabled: ${MESSAGING_ENABLED:false}
+  search:
+    elasticsearch:
+      enabled: ${ELASTICSEARCH_ENABLED:false}
+      url: ${ELASTICSEARCH_URL:}
+      api-key: ${ELASTICSEARCH_API_KEY:}
+      index: ${ELASTICSEARCH_INDEX:homenest-products}

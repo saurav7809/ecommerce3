@@ -1,106 +1,237 @@
-// ─── Domain Types ────────────────────────────────────────────────────────────
+export type Role = 'CUSTOMER' | 'SELLER' | 'ADMIN';
 
-export interface Product {
+export interface User {
   id: number;
-  name: string;
-  category: string;
-  price: number;
-  imageUrl: string;
-  variant: string;
-  description: string;
-  inventory: number;
-  featured: boolean;
-}
-
-export interface CartLine {
-  product: Product;
-  quantity: number;
-}
-
-export interface Order {
-  reference: string;
-  status: string;
-  paymentStatus: string;
-  subtotal: number;
-}
-
-export interface Account {
-  name: string;
   email: string;
-  token: string;
-}
-
-// ─── Request / Response shapes ───────────────────────────────────────────────
-
-export interface RegisterRequest {
-  name: string;
-  email: string;
-  password: string;
-}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
+  fullName: string;
+  phone?: string;
+  role: Role;
+  createdAt?: string;
 }
 
 export interface AuthResponse {
   token: string;
+  tokenType: string;
+  expiresInMs: number;
+  user: User;
+}
+
+export interface CategorySummary {
+  id: number;
   name: string;
-  email: string;
+  slug: string;
+  imageUrl?: string;
+  displayOrder: number;
+  productCount: number;
 }
 
-export interface CreateOrderRequest {
-  email: string;
+export interface DepartmentSummary extends CategorySummary {
+  subcategories: CategorySummary[];
+}
+
+export interface ProductSummary {
+  id: number;
+  sku: string;
+  slug: string;
+  name: string;
+  brand: string;
+  price: number;
+  compareAtPrice?: number;
+  currency: string;
+  discountPercent?: number;
+  stock: number;
+  inStock: boolean;
+  rating: number;
+  reviewCount: number;
+  room?: string;
+  style?: string;
+  color?: string;
+  material?: string;
+  featured: boolean;
+  freeShipping: boolean;
+  categoryName?: string;
+  categorySlug?: string;
+  departmentName?: string;
+  departmentSlug?: string;
+  primaryImage?: string;
+  secondaryImage?: string;
+}
+
+export interface ProductDetail extends ProductSummary {
+  description?: string;
+  dimensions?: string;
+  weight?: string;
+  assemblyRequired?: boolean;
+  warranty?: string;
+  returnPolicyDays?: number;
+  images: string[];
+  sellerId?: number;
+  sellerName?: string;
+}
+
+export interface BucketCount {
+  value: string;
+  count: number;
+}
+
+export interface RangeBucket {
+  label: string;
+  min?: number;
+  max?: number;
+  count: number;
+}
+
+export interface ProductFacets {
+  brands: BucketCount[];
+  colors: BucketCount[];
+  materials: BucketCount[];
+  styles: BucketCount[];
+  rooms: BucketCount[];
+  priceBuckets: RangeBucket[];
+  minPrice: number;
+  maxPrice: number;
+  totalMatches: number;
+}
+
+export interface PageResponse<T> {
+  content: T[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
+export interface ReviewView {
+  id: number;
+  rating: number;
+  title: string;
+  comment: string;
+  authorName: string;
+  verifiedPurchase: boolean;
+  createdAt: string;
+}
+
+export interface ReviewHistogram {
+  stars: number;
+  count: number;
+  percentage: number;
+}
+
+export interface ReviewStats {
+  averageRating: number;
+  totalReviews: number;
+  histogram: ReviewHistogram[];
+}
+
+export interface CartLineItem {
+  product: ProductSummary;
+  quantity: number;
+}
+
+export interface QuoteLine {
+  product: ProductSummary;
+  quantity: number;
+  lineTotal: number;
+  available: boolean;
+  message?: string;
+}
+
+export interface CartQuote {
+  lines: QuoteLine[];
+  subtotal: number;
+  savings: number;
+  shipping: number;
+  total: number;
+  freeShippingThreshold: number;
+  amountToFreeShipping: number;
+  currency: string;
+  unknownProductIds: number[];
+}
+
+export interface AddressDetails {
   fullName: string;
-  deliveryAddress: string;
-  items: { productId: number; quantity: number }[];
+  street: string;
+  apartment?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  phone: string;
 }
 
-export interface PaymentOrder {
-  id: string;
-  amount: number;
+export interface AddressView {
+  id: number;
+  address: AddressDetails;
+  isDefault: boolean;
+  createdAt: string;
+}
+
+export type OrderStatus = 'PENDING_PAYMENT' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+export type PaymentStatus = 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
+export type PaymentMethod = 'RAZORPAY' | 'CASH_ON_DELIVERY';
+
+export interface OrderLineView {
+  id: number;
+  productId?: number;
+  productName: string;
+  productSku?: string;
+  unitPrice: number;
+  quantity: number;
+  totalPrice: number;
+  primaryImage?: string;
+}
+
+export interface OrderView {
+  id: number;
+  reference: string;
+  email: string;
+  shippingAddress: AddressDetails;
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  total: number;
+  currency: string;
+  status: OrderStatus;
+  paymentStatus: PaymentStatus;
+  paymentMethod: PaymentMethod;
+  paymentReference?: string;
+  notes?: string;
+  items: OrderLineView[];
+  createdAt: string;
+}
+
+export interface RazorpayOrder {
+  orderReference: string;
+  razorpayOrderId: string;
+  amountInPaise: number;
   currency: string;
   keyId: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone?: string;
 }
 
-export interface RecommendationRequest {
-  products: { id: number; category: string; featured: boolean }[];
-  cart_ids: number[];
-  limit?: number;
-}
-
-export interface RecommendationResponse {
-  productIds: number[];
-  reason: string;
-}
-
-// ─── Razorpay global types ───────────────────────────────────────────────────
-
-export interface RazorpayOptions {
-  key: string;
-  amount: number;
+export interface PaymentConfig {
+  razorpayEnabled: boolean;
+  razorpayKeyId?: string;
   currency: string;
-  name: string;
-  description: string;
-  order_id: string;
-  prefill: { name: string; email: string };
-  theme: { color: string };
-  handler: (response: {
-    razorpay_order_id: string;
-    razorpay_payment_id: string;
-    razorpay_signature: string;
-  }) => void;
 }
 
-declare global {
-  interface Window {
-    Razorpay?: new (options: RazorpayOptions) => {
-      open: () => void;
-      on: (
-        event: 'payment.failed',
-        handler: (response: { error?: { description?: string } }) => void,
-      ) => void;
-    };
-  }
+export interface AdminStats {
+  totalOrders: number;
+  totalRevenue: number;
+  totalProducts: number;
+  totalCustomers: number;
+  lowStockCount: number;
 }
 
+export interface AiChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  suggestedProducts?: ProductSummary[];
+  timestamp: string;
+}
