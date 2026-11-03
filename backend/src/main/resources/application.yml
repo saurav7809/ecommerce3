@@ -50,6 +50,17 @@ spring:
     virtual-host: ${RABBITMQ_VHOST:/}
     ssl:
       enabled: ${RABBITMQ_SSL:false}
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          starttls:
+            enable: ${MAIL_SMTP_STARTTLS:true}
 
 springdoc:
   api-docs:
@@ -87,6 +98,15 @@ app:
     key-secret: ${RAZORPAY_KEY_SECRET:}
   messaging:
     enabled: ${MESSAGING_ENABLED:false}
+  auth:
+    google-client-id: ${GOOGLE_CLIENT_ID:}
+    otp:
+      # Console delivery is intended only for local development. Disable it in deployed environments.
+      console-delivery: ${OTP_CONSOLE_DELIVERY:true}
+      expiration-minutes: ${OTP_EXPIRATION_MINUTES:10}
+      email-from: ${OTP_EMAIL_FROM:no-reply@homenest.local}
+      sms-gateway-url: ${OTP_SMS_GATEWAY_URL:}
+      sms-gateway-token: ${OTP_SMS_GATEWAY_TOKEN:}
   search:
     elasticsearch:
       enabled: ${ELASTICSEARCH_ENABLED:false}

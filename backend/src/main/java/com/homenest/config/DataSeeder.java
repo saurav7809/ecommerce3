@@ -339,8 +339,10 @@ public class DataSeeder implements ApplicationRunner {
     }
 
     private User ensureUser(String name, String email, String password, Role role) {
-        return users.findByEmailIgnoreCase(email)
+        User user = users.findByEmailIgnoreCase(email)
                 .orElseGet(() -> users.save(new User(name, email, passwords.encode(password), role)));
+        user.setEmailVerified(true);
+        return users.save(user);
     }
 
     private void seedCatalog(User seller) {

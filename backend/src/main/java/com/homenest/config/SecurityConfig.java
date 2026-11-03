@@ -60,7 +60,8 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/health", "/api/auth/register", "/api/auth/login").permitAll()
+                        .requestMatchers("/api/health", "/api/auth/register", "/api/auth/login", "/api/auth/google",
+                                "/api/auth/email-verification/**", "/api/auth/password-reset", "/api/auth/password-reset/**").permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/categories/**", "/api/payments/config").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/cart/quote").permitAll()

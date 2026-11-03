@@ -187,6 +187,14 @@ export default function Navbar() {
                         </span>
                       </div>
                       <Link
+                        to="/account"
+                        onClick={() => setIsAccountOpen(false)}
+                        className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-[#7b189f]"
+                      >
+                        <UserIcon className="w-4 h-4" />
+                        <span>Account profile</span>
+                      </Link>
+                      <Link
                         to="/orders"
                         onClick={() => setIsAccountOpen(false)}
                         className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-[#7b189f]"

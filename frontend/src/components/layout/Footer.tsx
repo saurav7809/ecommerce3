@@ -111,7 +111,7 @@ export default function Footer() {
 
       {/* Copyright */}
       <div className="max-w-7xl mx-auto px-4 pt-6 border-t border-gray-800 text-xs text-gray-500 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <p>© 2026 HomeNest Inc. Wayfair-style E-Commerce Architecture. Built for Windows localhost execution without Docker.</p>
+        <p>© 2026 HomeNest Inc. Wayfair-style E-Commerce Architecture. Built for local development.</p>
         <p className="flex items-center space-x-1">
           <span>Crafted with</span>
           <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />

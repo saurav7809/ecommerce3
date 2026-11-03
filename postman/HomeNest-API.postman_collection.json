@@ -8,6 +8,9 @@
     { "key": "baseUrl", "value": "http://localhost:8080" },
     { "key": "aiUrl", "value": "http://localhost:8001" },
     { "key": "token", "value": "" },
+    { "key": "otpCode", "value": "" },
+    { "key": "phoneCode", "value": "" },
+    { "key": "googleIdToken", "value": "" },
     { "key": "orderReference", "value": "ORD-123456" },
     { "key": "productSlug", "value": "haven-velvet-3-piece-sectional" }
   ],
@@ -63,9 +66,45 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"fullName\": \"Saurav Customer\",\n  \"email\": \"customer.test@example.com\",\n  \"password\": \"SecurePass@123\",\n  \"phone\": \"9876543210\",\n  \"role\": \"CUSTOMER\"\n}"
+              "raw": "{\n  \"name\": \"Saurav Customer\",\n  \"email\": \"customer.test@example.com\",\n  \"password\": \"SecurePass@123\",\n  \"phone\": \"9876543210\",\n  \"accountType\": \"CUSTOMER\"\n}"
             },
             "url": "{{baseUrl}}/api/auth/register"
+          }
+        },
+        {
+          "name": "Request Email Verification Code",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer.test@example.com\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/email-verification/request"
+          }
+        },
+        {
+          "name": "Verify Email (use code from backend console)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer.test@example.com\",\n  \"code\": \"{{otpCode}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/email-verification/verify"
+          }
+        },
+        {
+          "name": "Google Sign In (set a Google ID token)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idToken\": \"{{googleIdToken}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/google"
           }
         },
         {
@@ -98,6 +137,68 @@
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": "{{baseUrl}}/api/auth/me"
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "******" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Saurav Customer\",\n  \"phone\": \"+919876543210\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/me"
+          }
+        },
+        {
+          "name": "Request Phone Verification Code",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/auth/phone-verification/request"
+          }
+        },
+        {
+          "name": "Verify Phone",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{phoneCode}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/phone-verification/verify"
+          }
+        },
+        {
+          "name": "Request Password Reset Code",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer.test@example.com\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/password-reset/request"
+          }
+        },
+        {
+          "name": "Reset Password (use code from backend console)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer.test@example.com\",\n  \"code\": \"{{otpCode}}\",\n  \"newPassword\": \"NewSecurePass@123\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/password-reset"
           }
         }
       ]

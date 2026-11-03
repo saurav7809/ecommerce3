@@ -6,14 +6,19 @@ export interface User {
   fullName: string;
   phone?: string;
   role: Role;
+  emailVerified: boolean;
+  phoneVerified: boolean;
   createdAt?: string;
 }
 
 export interface AuthResponse {
   token: string;
-  tokenType: string;
-  expiresInMs: number;
   user: User;
+}
+
+export interface RegistrationResponse {
+  email: string;
+  message: string;
 }
 
 export interface CategorySummary {

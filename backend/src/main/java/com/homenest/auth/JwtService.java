@@ -30,6 +30,7 @@ public class JwtService {
         return Jwts.builder()
                 .subject(user.getEmail())
                 .claim("role", user.getRole().name())
+                .claim("tokenVersion", user.getTokenVersion())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusMillis(expirationMs)))
                 .signWith(key)
@@ -39,5 +40,11 @@ public class JwtService {
     /** Returns the e-mail address in a valid token; throws if the token is invalid or expired. */
     public String subject(String token) {
         return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().getSubject();
+    }
+
+    public boolean isCurrentFor(String token, User user) {
+        Integer tokenVersion = Jwts.parser().verifyWith(key).build().parseSignedClaims(token)
+                .getPayload().get("tokenVersion", Integer.class);
+        return tokenVersion == null ? user.getTokenVersion() == 0 : tokenVersion == user.getTokenVersion();
     }
 }

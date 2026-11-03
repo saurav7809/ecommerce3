@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import com.homenest.user.User;
 
 import java.io.IOException;
 
@@ -31,8 +32,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ") && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
-                UserDetails user = users.loadUserByUsername(jwt.subject(header.substring(7)));
-                if (user.isEnabled()) {
+                String token = header.substring(7);
+                UserDetails user = users.loadUserByUsername(jwt.subject(token));
+                if (user.isEnabled() && (!(user instanceof User account) || jwt.isCurrentFor(token, account))) {
                     var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                     auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(auth);

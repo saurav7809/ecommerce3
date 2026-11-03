@@ -2,13 +2,13 @@
 
 A production-grade, enterprise home furnishings e-commerce platform built to replicate the rich browsing, faceted search, interior design AI assistance, and checkout experience of **Wayfair**.
 
-Designed and engineered to run **directly on Windows without Docker**, using native services.
+Designed to run directly on your computer with locally installed services. PostgreSQL is the only required service; Redis and external integrations are optional.
 
 ---
 
 ## 🏗️ Complete Technology Stack
 
-| Layer | Technology | Runs Without Docker? | Local Port |
+| Layer | Technology | Local Setup | Local Port |
 | :--- | :--- | :---: | :--- |
 | **Frontend** | React 19 + TypeScript (Vite) | ✅ Yes | `http://localhost:5173` |
 | **UI & Styling** | Tailwind CSS v4 + Wayfair Theme Tokens | ✅ Yes | — |
@@ -18,7 +18,7 @@ Designed and engineered to run **directly on Windows without Docker**, using nat
 | **Backend Framework** | Java 21 + Spring Boot 3.5.16 | ✅ Yes | `http://localhost:8080` |
 | **Persistence / ORM** | Spring Data JPA + Hibernate 6 | ✅ Yes | — |
 | **Database** | PostgreSQL 16+ / 17+ / 18+ | ✅ Yes | `localhost:5432` |
-| **DB Admin** | pgAdmin 4 or `psql` | ✅ Yes | Native Windows GUI |
+| **DB Admin** | pgAdmin 4 or `psql` | ✅ Yes | Local GUI/CLI |
 | **Security & Auth** | Spring Security 6 + JWT (jjwt 0.12.6) | ✅ Yes | Stateless Token Filter |
 | **API Documentation** | Swagger / OpenAPI 3 (SpringDoc 2.8.17) | ✅ Yes | `http://localhost:8080/swagger-ui.html` |
 | **Payment Gateway** | Razorpay Test Mode (Cards, UPI, COD) | ✅ Yes | Embedded Client + Webhook/Verify |
@@ -61,35 +61,51 @@ Designed and engineered to run **directly on Windows without Docker**, using nat
 
 ---
 
-## 🚀 Quick Start Guide (Windows Native — No Docker)
+## 🚀 Quick Start Guide (Native Local Setup)
 
 ### 1. Prerequisites Checklist
 - **Java 21 JDK** (`java -version`)
 - **Node.js 20+** and **npm** (`node -v` / `npm -v`)
 - **Python 3.10+** (`python --version`)
-- **PostgreSQL** installed directly on Windows (or running on port 5432)
+- **PostgreSQL** installed locally and running on port `5432`
+- **Redis** is optional; the application defaults to in-memory caching.
 
 ---
 
 ### 2. Database Setup (PostgreSQL)
 
-Open **pgAdmin 4** (or Windows PowerShell with `psql`):
+Install PostgreSQL using its native installer/package for your operating system, start the PostgreSQL service, then open **pgAdmin** or `psql`:
 
 ```sql
 CREATE DATABASE homenest;
 ```
 
-*Note: Default credentials configured in `backend/src/main/resources/application.yml` are `user: postgres`, `password: postgres`. If your local password differs, you can pass it via environment variable `DATABASE_PASSWORD=your_password`.*
+The backend defaults are `DATABASE_URL=jdbc:postgresql://localhost:5432/homenest` and `DATABASE_USER=postgres`. The default password is `postgres`; if you chose another password, set `DATABASE_PASSWORD` before starting the API:
+
+```powershell
+$env:DATABASE_PASSWORD = "your-postgres-password"
+```
+
+```bash
+export DATABASE_PASSWORD='your-postgres-password'
+```
 
 ---
 
 ### 3. Start the Spring Boot Backend (Port 8080)
 
-The backend includes a pre-configured Maven Wrapper (`mvnw.cmd`), so **no system-wide Maven installation is needed**.
+The backend includes a Maven Wrapper, so **no system-wide Maven installation is needed**.
 
+Windows PowerShell:
 ```powershell
 cd backend
 .\mvnw.cmd spring-boot:run
+```
+
+Linux/macOS:
+```bash
+cd backend
+bash ./mvnw spring-boot:run
 ```
 
 - When the backend starts for the first time, the built-in `DataSeeder` automatically generates:
@@ -100,6 +116,7 @@ cd backend
     - **Admin:** `admin@homenest.local` / `Admin@12345`
     - **Seller:** `seller@homenest.local` / `Seller@12345`
     - **Customer:** `customer@homenest.local` / `Customer@12345`
+-  - These seeded accounts are pre-verified for local testing.
 - Swagger UI will be available at: **`http://localhost:8080/swagger-ui.html`**
 - OpenAPI 3 JSON docs at: **`http://localhost:8080/v3/api-docs`**
 
@@ -119,13 +136,23 @@ uvicorn app.main:app --port 8001 --reload
 
 ### 5. Start the React Frontend (Port 5173)
 
-```powershell
+```bash
 cd frontend
 npm install
 npm run dev
 ```
 
 Visit **`http://localhost:5173`** in your browser.
+
+The application runs as three native processes: PostgreSQL, Spring Boot, and the Vite frontend. Start the optional AI service separately if you want its design assistant. No container runtime is part of the setup.
+
+### Account Security Setup
+
+- New accounts must verify their e-mail with a six-digit, ten-minute code before password sign-in is allowed. In local development, the code is printed in the backend terminal (`OTP_CONSOLE_DELIVERY=true` by default).
+- Mobile verification codes use the same local console delivery. To send real messages, set `OTP_CONSOLE_DELIVERY=false`, configure SMTP with `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, and `MAIL_PASSWORD`, and point `OTP_SMS_GATEWAY_URL` to an SMS endpoint that accepts `POST {"to":"...","message":"..."}`. If needed, set `OTP_SMS_GATEWAY_TOKEN` for a Bearer token.
+- Google sign-in is optional. Configure the same Google OAuth web client ID as `GOOGLE_CLIENT_ID` in the backend environment and `VITE_GOOGLE_CLIENT_ID` in `frontend/.env`.
+- Account profile editing and mobile verification are available from the signed-in account menu at **Account profile**. Password reset is available from the sign-in dialog.
+- Console OTP delivery is for local development only. Disable it for deployed environments and configure real mail/SMS delivery; never expose or commit provider credentials.
 
 ---
 

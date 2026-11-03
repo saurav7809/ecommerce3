@@ -8,6 +8,7 @@ import {
   CartQuote,
   PaymentConfig,
   AuthResponse,
+  RegistrationResponse,
   User,
   OrderView,
   RazorpayOrder,
@@ -96,8 +97,8 @@ export const apiSlice = createApi({
       invalidatesTags: ['User', 'Orders', 'Addresses'],
     }),
     register: builder.mutation<
-      AuthResponse,
-      { fullName: string; email: string; password: string; phone?: string; role?: string }
+      RegistrationResponse,
+      { name: string; email: string; password: string; phone?: string; accountType?: 'CUSTOMER' | 'SELLER' }
     >({
       query: (body) => ({
         url: '/api/auth/register',
@@ -106,9 +107,37 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['User'],
     }),
+    googleLogin: builder.mutation<AuthResponse, { idToken: string }>({
+      query: (body) => ({ url: '/api/auth/google', method: 'POST', body }),
+      invalidatesTags: ['User', 'Orders', 'Addresses'],
+    }),
+    requestEmailVerification: builder.mutation<{ message: string }, { email: string }>({
+      query: (body) => ({ url: '/api/auth/email-verification/request', method: 'POST', body }),
+    }),
+    verifyEmail: builder.mutation<{ message: string }, { email: string; code: string }>({
+      query: (body) => ({ url: '/api/auth/email-verification/verify', method: 'POST', body }),
+      invalidatesTags: ['User'],
+    }),
+    requestPasswordReset: builder.mutation<{ message: string }, { email: string }>({
+      query: (body) => ({ url: '/api/auth/password-reset/request', method: 'POST', body }),
+    }),
+    resetPassword: builder.mutation<{ message: string }, { email: string; code: string; newPassword: string }>({
+      query: (body) => ({ url: '/api/auth/password-reset', method: 'POST', body }),
+    }),
     getCurrentUser: builder.query<User, void>({
       query: () => '/api/auth/me',
       providesTags: ['User'],
+    }),
+    updateProfile: builder.mutation<User, { fullName: string; phone?: string }>({
+      query: (body) => ({ url: '/api/auth/me', method: 'PATCH', body }),
+      invalidatesTags: ['User'],
+    }),
+    requestPhoneVerification: builder.mutation<{ message: string }, void>({
+      query: () => ({ url: '/api/auth/phone-verification/request', method: 'POST' }),
+    }),
+    verifyPhone: builder.mutation<{ message: string }, { code: string }>({
+      query: (body) => ({ url: '/api/auth/phone-verification/verify', method: 'POST', body }),
+      invalidatesTags: ['User'],
     }),
 
     // Addresses
@@ -298,7 +327,15 @@ export const {
   useGetCartQuoteMutation,
   useLoginMutation,
   useRegisterMutation,
+  useGoogleLoginMutation,
+  useRequestEmailVerificationMutation,
+  useVerifyEmailMutation,
+  useRequestPasswordResetMutation,
+  useResetPasswordMutation,
   useGetCurrentUserQuery,
+  useUpdateProfileMutation,
+  useRequestPhoneVerificationMutation,
+  useVerifyPhoneMutation,
   useGetAddressesQuery,
   useCreateAddressMutation,
   useDeleteAddressMutation,

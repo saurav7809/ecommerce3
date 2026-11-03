@@ -15,7 +15,8 @@ public record AppProperties(
         Cloudinary cloudinary,
         Razorpay razorpay,
         Messaging messaging,
-        Search search) {
+        Search search,
+        Auth auth) {
 
     public record Jwt(String secret, long expirationMs) { }
 
@@ -42,6 +43,11 @@ public record AppProperties(
     public record Search(Elasticsearch elasticsearch) {
         public record Elasticsearch(boolean enabled, String url, String apiKey, String index) { }
     }
+
+    public record Auth(String googleClientId, Otp otp) { }
+
+    public record Otp(boolean consoleDelivery, int expirationMinutes, String emailFrom,
+                      String smsGatewayUrl, String smsGatewayToken) { }
 
     private static boolean hasText(String value) {
         return value != null && !value.isBlank();

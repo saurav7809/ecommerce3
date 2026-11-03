@@ -16,6 +16,7 @@ import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import OrdersPage from './pages/OrdersPage';
 import FavoritesPage from './pages/FavoritesPage';
 import AdminPage from './pages/AdminPage';
+import AccountPage from './pages/AccountPage';
 
 export default function App() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/orders/:reference" element={<OrderConfirmationPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
+          <Route path="/account" element={<AccountPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
