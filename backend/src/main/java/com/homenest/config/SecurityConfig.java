@@ -64,6 +64,7 @@ public class SecurityConfig {
                                 "/api/auth/email-verification/**", "/api/auth/password-reset", "/api/auth/password-reset/**").permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**", "/api/categories/**", "/api/payments/config").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/recommendations", "/api/recommendations/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/cart/quote").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/manage/**").hasAnyRole("ADMIN", "SELLER")

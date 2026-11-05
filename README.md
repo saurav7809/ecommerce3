@@ -178,6 +178,10 @@ The application runs as three native processes: PostgreSQL, Spring Boot, and the
    - Natural language conversational assistant suggesting specific catalog items with direct "Add to Cart" buttons inside the chat.
 9. **Merchant & Admin Operations Portal (`/admin`):**
    - Live revenue metrics, total orders, product catalog management (create/edit/delete), and fulfillment workflow (Confirmed -> Shipped -> Delivered).
+10. **Hybrid Product Recommendations:**
+   - Product-detail recommendations combine recent browser-local views, signed-in customer's non-cancelled order history, catalog attribute similarity, and order co-purchases.
+   - Frequently bought together is ranked from products appearing in the same non-cancelled orders. Recommendations fall back to ratings and review volume when behavioral signals are sparse.
+   - This is an implicit-feedback, item-based collaborative/content recommender; it does not train a separate ML model.
 
 ---
 

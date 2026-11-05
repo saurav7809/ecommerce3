@@ -42,6 +42,21 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     default boolean hasPurchased(Long userId, Long productId) { return hasPurchasedExcluding(userId, productId, NOT_COUNTED); }
 
+    @Query("select distinct i.productId from OrderItem i where i.order.user.id = :userId and i.order.status not in :excluded")
+    List<Long> findPurchasedProductIds(Long userId, Collection<OrderStatus> excluded);
+
+    @Query("select related.productId, count(distinct source.order.id) from OrderItem source, OrderItem related "
+            + "where related.order = source.order and source.productId in :productIds "
+            + "and related.productId not in :productIds and source.order.status not in :excluded "
+            + "group by related.productId order by count(distinct source.order.id) desc, related.productId asc")
+    List<Object[]> findCoPurchasedProductScores(Collection<Long> productIds, Collection<OrderStatus> excluded);
+
+    @Query("select related.productId, count(distinct source.order.id) from OrderItem source, OrderItem related "
+            + "where related.order = source.order and source.productId = :productId "
+            + "and related.productId <> :productId and source.order.status not in :excluded "
+            + "group by related.productId order by count(distinct source.order.id) desc, related.productId asc")
+    List<Object[]> findFrequentlyBoughtTogether(Long productId, Collection<OrderStatus> excluded);
+
     @Query("select o.status, count(o) from Order o group by o.status")
     List<Object[]> countByStatus();
 }

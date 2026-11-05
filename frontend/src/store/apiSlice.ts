@@ -23,6 +23,20 @@ import { RootState } from './index';
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 const AI_BASE_URL = import.meta.env.VITE_AI_URL || 'http://localhost:8001';
 
+type ApiProductSummary = ProductSummary & {
+  imageUrl?: string;
+  hoverImageUrl?: string;
+  category?: string;
+};
+
+const normalizeProductSummaries = (products: ApiProductSummary[]): ProductSummary[] =>
+  products.map((product) => ({
+    ...product,
+    primaryImage: product.primaryImage || product.imageUrl,
+    secondaryImage: product.secondaryImage || product.hoverImageUrl,
+    categoryName: product.categoryName || product.category,
+  }));
+
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
@@ -74,8 +88,23 @@ export const apiSlice = createApi({
       query: (slug) => `/api/products/${slug}`,
       providesTags: (_result, _error, slug) => [{ type: 'Products', id: slug }],
     }),
-    getSimilarProducts: builder.query<ProductSummary[], number>({
-      query: (id) => `/api/products/${id}/similar?limit=6`,
+    getSimilarProducts: builder.query<ProductSummary[], string>({
+      query: (slug) => `/api/products/${slug}/similar?limit=6`,
+      transformResponse: normalizeProductSummaries,
+    }),
+    getRecommendations: builder.query<ProductSummary[], { viewedIds?: number[]; excludeIds?: number[] }>({
+      query: ({ viewedIds = [], excludeIds = [] }) => {
+        const params = new URLSearchParams();
+        if (viewedIds.length) params.set('viewedIds', viewedIds.join(','));
+        if (excludeIds.length) params.set('excludeIds', excludeIds.join(','));
+        params.set('limit', '8');
+        return `/api/recommendations?${params.toString()}`;
+      },
+      transformResponse: normalizeProductSummaries,
+    }),
+    getFrequentlyBoughtTogether: builder.query<ProductSummary[], number>({
+      query: (productId) => `/api/recommendations/frequently-bought-together?productId=${productId}&limit=4`,
+      transformResponse: normalizeProductSummaries,
     }),
 
     // Cart Quote
@@ -324,6 +353,8 @@ export const {
   useGetProductFacetsQuery,
   useGetProductBySlugQuery,
   useGetSimilarProductsQuery,
+  useGetRecommendationsQuery,
+  useGetFrequentlyBoughtTogetherQuery,
   useGetCartQuoteMutation,
   useLoginMutation,
   useRegisterMutation,

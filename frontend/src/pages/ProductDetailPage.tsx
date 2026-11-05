@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   Star,
@@ -16,6 +16,8 @@ import {
 import {
   useGetProductBySlugQuery,
   useGetSimilarProductsQuery,
+  useGetRecommendationsQuery,
+  useGetFrequentlyBoughtTogetherQuery,
   useGetProductReviewsQuery,
   useGetReviewStatsQuery,
   useCreateReviewMutation,
@@ -27,15 +29,37 @@ import { addToast, openAuthModal, openAiDrawer } from '../store/uiSlice';
 import { formatCurrency, formatEstimatedDelivery, calculateSavings } from '../lib/utils';
 import ProductGrid from '../components/product/ProductGrid';
 
+function readRecentlyViewedIds(): number[] {
+  try {
+    const stored = JSON.parse(window.localStorage.getItem('homenest.recently-viewed') || '[]');
+    return Array.isArray(stored)
+      ? stored.filter((id): id is number => Number.isInteger(id) && id > 0).slice(0, 12)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const dispatch = useAppDispatch();
 
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const wishlist = useAppSelector((state) => state.wishlist.items);
+  const [viewedProductIds, setViewedProductIds] = useState<number[]>(readRecentlyViewedIds);
 
   const { data: product, isLoading, isError } = useGetProductBySlugQuery(slug || '');
-  const { data: similarProducts } = useGetSimilarProductsQuery(product?.id || 0, {
+  const { data: similarProducts } = useGetSimilarProductsQuery(product?.slug || '', {
+    skip: !product?.id,
+  });
+  const { data: recommendedProducts } = useGetRecommendationsQuery(
+    {
+      viewedIds: product ? [product.id, ...viewedProductIds.filter((id) => id !== product.id)] : viewedProductIds,
+      excludeIds: product ? [product.id] : [],
+    },
+    { skip: !product?.id }
+  );
+  const { data: frequentlyBoughtTogether } = useGetFrequentlyBoughtTogetherQuery(product?.id || 0, {
     skip: !product?.id,
   });
   const { data: reviewsData } = useGetProductReviewsQuery(
@@ -54,6 +78,16 @@ export default function ProductDetailPage() {
   const [newRating, setNewRating] = useState(5);
   const [newTitle, setNewTitle] = useState('');
   const [newComment, setNewComment] = useState('');
+
+  useEffect(() => {
+    if (!product?.id) return;
+    const recent = [product.id, ...viewedProductIds.filter((id) => id !== product.id)].slice(0, 12);
+    if (recent.length === viewedProductIds.length && recent.every((id, index) => id === viewedProductIds[index])) return;
+    setViewedProductIds(recent);
+    try {
+      window.localStorage.setItem('homenest.recently-viewed', JSON.stringify(recent));
+    } catch { }
+  }, [product?.id, viewedProductIds]);
 
   if (isLoading) {
     return (
@@ -601,6 +635,26 @@ export default function ProductDetailPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {frequentlyBoughtTogether && frequentlyBoughtTogether.length > 0 && (
+        <section className="space-y-6 pt-10 border-t border-gray-200">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Frequently Bought Together</h2>
+            <p className="text-xs text-gray-500 mt-1">Popular combinations from customer orders</p>
+          </div>
+          <ProductGrid products={frequentlyBoughtTogether} />
+        </section>
+      )}
+
+      {recommendedProducts && recommendedProducts.length > 0 && (
+        <section className="space-y-6 pt-10 border-t border-gray-200">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Picked for You</h2>
+            <p className="text-xs text-gray-500 mt-1">Based on your browsing and purchase history</p>
+          </div>
+          <ProductGrid products={recommendedProducts} />
+        </section>
       )}
 
       {/* Complete the Look / Similar Products */}
